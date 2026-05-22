@@ -1,0 +1,242 @@
+apiVersion: serving.knative.dev/v1
+kind: Service
+metadata:
+  name: log-f1-batch
+  namespace: default
+spec:
+  template:
+    metadata:
+      annotations:
+        autoscaling.knative.dev/minScale: "1"
+    spec:
+      containerConcurrency: 1
+      containers:
+        - image: 172.0.0.0:5000/log-f1-batch:latest
+          imagePullPolicy: IfNotPresent
+          ports:
+            - containerPort: 8080
+          env:
+            - name: F2_URL
+              value: "http://log-f2-shard.default.svc.cluster.local/"
+            - name: REDIS_HOST
+              value: "redis.default.svc.cluster.local"
+          resources:
+            limits:
+              cpu: "1"
+              memory: "512Mi"
+            requests:
+              cpu: "250m"
+              memory: "256Mi"
+
+---
+apiVersion: serving.knative.dev/v1
+kind: Service
+metadata:
+  name: log-f2-shard
+  namespace: default
+spec:
+  template:
+    metadata:
+      annotations:
+        autoscaling.knative.dev/minScale: "1"
+    spec:
+      containerConcurrency: 1
+      containers:
+        - image: 172.0.0.0:5000/log-f2-shard:latest
+          imagePullPolicy: IfNotPresent
+          ports:
+            - containerPort: 8080
+          env:
+            - name: F3_URL
+              value: "http://log-f3-parse.default.svc.cluster.local/"
+            - name: REDIS_HOST
+              value: "redis.default.svc.cluster.local"
+          resources:
+            limits:
+              cpu: "1"
+              memory: "512Mi"
+            requests:
+              cpu: "250m"
+              memory: "256Mi"
+---
+apiVersion: serving.knative.dev/v1
+kind: Service
+metadata:
+  name: log-f3-parse
+  namespace: default
+spec:
+  template:
+    metadata:
+      annotations:
+        autoscaling.knative.dev/minScale: "1"
+        autoscaling.knative.dev/maxScale: "20"
+    spec:
+      containerConcurrency: 1
+      containers:
+        - image: 172.0.0.0:5000/log-f3-parse:latest
+          imagePullPolicy: IfNotPresent
+          ports:
+            - containerPort: 8080
+          env:
+            - name: F4_URL
+              value: "http://log-f4-extract.default.svc.cluster.local/"
+            - name: REDIS_HOST
+              value: "redis.default.svc.cluster.local"
+          resources:
+            limits:
+              cpu: "1"
+              memory: "512Mi"
+            requests:
+              cpu: "250m"
+              memory: "256Mi"
+---
+apiVersion: serving.knative.dev/v1
+kind: Service
+metadata:
+  name: log-f4-extract
+  namespace: default
+spec:
+  template:
+    metadata:
+      annotations:
+        autoscaling.knative.dev/minScale: "1"
+    spec:
+      containerConcurrency: 1
+      containers:
+        - image: 172.0.0.0:5000/log-f4-extract:latest
+          imagePullPolicy: IfNotPresent
+          ports:
+            - containerPort: 8080
+          env:
+            - name: F5_URL
+              value: "http://log-f5-sessionize.default.svc.cluster.local/"
+            - name: REDIS_HOST
+              value: "redis.default.svc.cluster.local"
+          resources:
+            limits:
+              cpu: "1"
+              memory: "512Mi"
+            requests:
+              cpu: "250m"
+              memory: "256Mi"
+---
+apiVersion: serving.knative.dev/v1
+kind: Service
+metadata:
+  name: log-f5-sessionize
+  namespace: default
+spec:
+  template:
+    metadata:
+      annotations:
+        autoscaling.knative.dev/minScale: "1"
+    spec:
+      containerConcurrency: 1
+      containers:
+        - image: 172.0.0.0:5000/log-f5-sessionize:latest
+          imagePullPolicy: IfNotPresent
+          ports:
+            - containerPort: 8080
+          env:
+            - name: F6_URL
+              value: "http://log-f6-error-detect.default.svc.cluster.local/"
+            - name: REDIS_HOST
+              value: "redis.default.svc.cluster.local"
+          resources:
+            limits:
+              cpu: "1"
+              memory: "512Mi"
+            requests:
+              cpu: "250m"
+              memory: "256Mi"
+
+---
+apiVersion: serving.knative.dev/v1
+kind: Service
+metadata:
+  name: log-f6-error-detect
+  namespace: default
+spec:
+  template:
+    metadata:
+      annotations:
+        autoscaling.knative.dev/minScale: "1"
+    spec:
+      containerConcurrency: 1
+      containers:
+        - image: 172.0.0.0:5000/log-f6-error-detect:latest
+          imagePullPolicy: IfNotPresent
+          ports:
+            - containerPort: 8080
+          env:
+            - name: F7_URL
+              value: "http://log-f7-global-aggregate.default.svc.cluster.local/"
+            - name: REDIS_HOST
+              value: "redis.default.svc.cluster.local"
+          resources:
+            limits:
+              cpu: "500m"
+              memory: "512Mi"
+            requests:
+              cpu: "250m"
+              memory: "256Mi"
+
+---
+apiVersion: serving.knative.dev/v1
+kind: Service
+metadata:
+  name: log-f7-global-aggregate
+  namespace: default
+spec:
+  template:
+    metadata:
+      annotations:
+        autoscaling.knative.dev/minScale: "1"
+    spec:
+      containerConcurrency: 1
+      containers:
+        - image: 172.0.0.0:5000/log-f7-global-aggregate:latest
+          imagePullPolicy: IfNotPresent
+          ports:
+            - containerPort: 8080
+          env:
+            - name: F8_URL
+              value: "http://log-f8-publish-metrics.default.svc.cluster.local/"
+            - name: REDIS_HOST
+              value: "redis.default.svc.cluster.local"
+          resources:
+            limits:
+              cpu: "250m"
+              memory: "256Mi"
+            requests:
+              cpu: "200m"
+              memory: "128Mi"
+
+---
+apiVersion: serving.knative.dev/v1
+kind: Service
+metadata:
+  name: log-f8-publish-metrics
+  namespace: default
+spec:
+  template:
+    metadata:
+      annotations:
+        autoscaling.knative.dev/minScale: "1"
+    spec:
+      containerConcurrency: 1
+      containers:
+        - image: 172.0.0.0:5000/log-f8-publish-metrics:latest
+          imagePullPolicy: IfNotPresent
+          ports:
+            - containerPort: 8080
+          env:
+            - name: REDIS_HOST
+              value: "redis.default.svc.cluster.local"
+          resources:
+            limits:
+              cpu: "250m"
+              memory: "256Mi"
+            requests:
+              cpu: "100m"
+              memory: "128Mi"

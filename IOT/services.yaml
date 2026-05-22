@@ -1,0 +1,151 @@
+apiVersion: serving.knative.dev/v1
+kind: Service
+metadata:
+  name: iot-f1-ingest
+  namespace: default
+spec:
+  template:
+    metadata:
+      annotations:
+        autoscaling.knative.dev/minScale: "1"
+    spec:
+      containerConcurrency: 1
+      containers:
+        - image: 172.0.0.0:5000/iot-f1-ingest:latest
+          imagePullPolicy: IfNotPresent
+          ports:
+            - containerPort: 8080
+          env:
+            - name: F2_URL
+              value: "http://iot-f2-decode.default.svc.cluster.local/"
+            - name: REDIS_HOST
+              value: "redis.default.svc.cluster.local"
+          resources:
+            limits:
+              cpu: "200m"
+              memory: "256Mi"
+            requests:
+              cpu: "100m"
+              memory: "128Mi"
+---
+apiVersion: serving.knative.dev/v1
+kind: Service
+metadata:
+  name: iot-f2-decode
+  namespace: default
+spec:
+  template:
+    metadata:
+      annotations:
+        autoscaling.knative.dev/minScale: "1"
+    spec:
+      containerConcurrency: 1
+      containers:
+        - image: 172.0.0.0:5000/iot-f2-decode:latest
+          imagePullPolicy: IfNotPresent
+          ports:
+            - containerPort: 8080
+          env:
+            - name: F3_URL
+              value: "http://iot-f3-filter.default.svc.cluster.local/"
+            - name: REDIS_HOST
+              value: "redis.default.svc.cluster.local"
+          resources:
+            limits:
+              cpu: "200m"
+              memory: "256Mi"
+            requests:
+              cpu: "100m"
+              memory: "128Mi"
+
+---
+apiVersion: serving.knative.dev/v1
+kind: Service
+metadata:
+  name: iot-f3-filter
+  namespace: default
+spec:
+  template:
+    metadata:
+      annotations:
+        autoscaling.knative.dev/minScale: "1"
+    spec:
+      containerConcurrency: 1
+      containers:
+        - image: 172.0.0.0:5000/iot-f3-filter:latest
+          imagePullPolicy: IfNotPresent
+          ports:
+            - containerPort: 8080
+          env:
+            - name: F4_URL
+              value: "http://iot-f4-aggregate.default.svc.cluster.local/"
+            - name: REDIS_HOST
+              value: "redis.default.svc.cluster.local"
+          resources:
+            limits:
+              cpu: "200m"
+              memory: "256Mi"
+            requests:
+              cpu: "100m"
+              memory: "128Mi"
+
+---
+apiVersion: serving.knative.dev/v1
+kind: Service
+metadata:
+  name: iot-f4-aggregate
+  namespace: default
+spec:
+  template:
+    metadata:
+      annotations:
+        autoscaling.knative.dev/minScale: "1"
+    spec:
+      containerConcurrency: 1
+      containers:
+        - image: 172.0.0.0:5000/iot-f4-aggregate:latest
+          imagePullPolicy: IfNotPresent
+          ports:
+            - containerPort: 8080
+          env:
+            - name: F5_URL
+              value: "http://iot-f5-dashboard.default.svc.cluster.local/"
+            - name: REDIS_HOST
+              value: "redis.default.svc.cluster.local"
+          resources:
+            limits:
+              cpu: "200m"
+              memory: "256Mi"
+            requests:
+              cpu: "100m"
+              memory: "128Mi"
+
+
+---
+apiVersion: serving.knative.dev/v1
+kind: Service
+metadata:
+  name: iot-f5-dashboard
+  namespace: default
+spec:
+  template:
+    metadata:
+      annotations:
+        autoscaling.knative.dev/minScale: "1"
+    spec:
+      containerConcurrency: 1
+      containers:
+        - image: 172.0.0.0:5000/iot-f5-dashboard:latest
+          imagePullPolicy: IfNotPresent
+          ports:
+            - containerPort: 8080
+          env:
+            - name: REDIS_HOST
+              value: "redis.default.svc.cluster.local"
+          resources:
+            limits:
+              cpu: "200m"
+              memory: "256Mi"
+            requests:
+              cpu: "100m"
+              memory: "128Mi"

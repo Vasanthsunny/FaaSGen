@@ -1,0 +1,213 @@
+apiVersion: serving.knative.dev/v1
+kind: Service
+metadata:
+  name: sec-f1-upload
+  namespace: default
+spec:
+  template:
+    metadata:
+      annotations:
+        autoscaling.knative.dev/minScale: "1"
+    spec:
+      containerConcurrency: 1
+      containers:
+        - image: 172.0.0.0:5000/sec-f1-upload:latest
+          imagePullPolicy: IfNotPresent
+          ports:
+            - containerPort: 8080
+          env:
+            - name: F2_URL
+              value: "http://sec-f2-unpack.default.svc.cluster.local/"
+            - name: REDIS_HOST
+              value: "redis.default.svc.cluster.local"
+          resources:
+            limits:
+              cpu: "500m"
+              memory: "512Mi"
+            requests:
+              cpu: "250m"
+              memory: "128Mi"
+---
+apiVersion: serving.knative.dev/v1
+kind: Service
+metadata:
+  name: sec-f2-unpack
+  namespace: default
+spec:
+  template:
+    metadata:
+      annotations:
+        autoscaling.knative.dev/minScale: "1"
+    spec:
+      containerConcurrency: 1
+      containers:
+        - image: 172.0.0.0:5000/sec-f2-unpack:latest
+          imagePullPolicy: IfNotPresent
+          ports:
+            - containerPort: 8080
+          env:
+            - name: REDIS_HOST
+              value: "redis.default.svc.cluster.local"
+          resources:
+            limits:
+              cpu: "500m"
+              memory: "516Mi"
+            requests:
+              cpu: "250m"
+              memory: "128Mi"
+---
+apiVersion: serving.knative.dev/v1
+kind: Service
+metadata:
+  name: sec-f3-dast
+  namespace: default
+spec:
+  template:
+    metadata:
+      annotations:
+        autoscaling.knative.dev/minScale: "1"
+        autoscaling.knative.dev/maxScale: "20"
+    spec:
+      containerConcurrency: 1
+      containers:
+        - image: 172.0.0.0:5000/sec-f3-dast:latest
+          imagePullPolicy: IfNotPresent
+          ports:
+            - containerPort: 8080
+          env:
+            - name: F4_URL
+              value: "http://sec-f4-risk.default.svc.cluster.local/"
+            - name: REDIS_HOST
+              value: "redis.default.svc.cluster.local"
+          resources:
+            limits:
+              cpu: "500m"
+              memory: "512Mi"
+            requests:
+              cpu: "250m"
+              memory: "128Mi"
+
+---
+apiVersion: serving.knative.dev/v1
+kind: Service
+metadata:
+  name: sec-f3-dep
+  namespace: default
+spec:
+  template:
+    metadata:
+      annotations:
+        autoscaling.knative.dev/minScale: "1"
+        autoscaling.knative.dev/maxScale: "20"
+    spec:
+      containerConcurrency: 1
+      containers:
+        - image: 172.0.0.0:5000/sec-f3-dep:latest
+          imagePullPolicy: IfNotPresent
+          ports:
+            - containerPort: 8080
+          env:
+            - name: F4_URL
+              value: "http://sec-f4-risk.default.svc.cluster.local/"
+            - name: REDIS_HOST
+              value: "redis.default.svc.cluster.local"
+          resources:
+            limits:
+              cpu: "500m"
+              memory: "512Mi"
+            requests:
+              cpu: "250m"
+              memory: "128Mi"
+
+---
+apiVersion: serving.knative.dev/v1
+kind: Service
+metadata:
+  name: sec-f3-sast
+  namespace: default
+spec:
+  template:
+    metadata:
+      annotations:
+        autoscaling.knative.dev/minScale: "1"
+        autoscaling.knative.dev/maxScale: "20"
+    spec:
+      containerConcurrency: 1
+      containers:
+        - image: 172.0.0.0:5000/sec-f3-sast:latest
+          imagePullPolicy: IfNotPresent
+          ports:
+            - containerPort: 8080
+          env:
+            - name: F4_URL
+              value: "http://sec-f4-risk.default.svc.cluster.local/"
+            - name: REDIS_HOST
+              value: "redis.default.svc.cluster.local"
+          resources:
+            limits:
+              cpu: "500m"
+              memory: "512Mi"
+            requests:
+              cpu: "250m"
+              memory: "128Mi"
+---
+apiVersion: serving.knative.dev/v1
+kind: Service
+metadata:
+  name: sec-f4-risk
+  namespace: default
+spec:
+  template:
+    metadata:
+      annotations:
+        autoscaling.knative.dev/minScale: "1"
+        autoscaling.knative.dev/maxScale: "20"
+    spec:
+      containerConcurrency: 1
+      containers:
+        - image: 172.0.0.0:5000/sec-f4-risk:latest
+          imagePullPolicy: IfNotPresent
+          ports:
+            - containerPort: 8080
+          env:
+            - name: F4_URL
+              value: "http://sec-f5-report.default.svc.cluster.local/"
+            - name: REDIS_HOST
+              value: "redis.default.svc.cluster.local"
+          resources:
+            limits:
+              cpu: "500m"
+              memory: "512Mi"
+            requests:
+              cpu: "250m"
+              memory: "128Mi"
+
+---
+apiVersion: serving.knative.dev/v1
+kind: Service
+metadata:
+  name: sec-f5-report
+  namespace: default
+spec:
+  template:
+    metadata:
+      annotations:
+        autoscaling.knative.dev/minScale: "1"
+    spec:
+      containerConcurrency: 1
+      containers:
+        - image: 172.0.0.0:5000/sec-f5-report:latest
+          imagePullPolicy: IfNotPresent
+          ports:
+            - containerPort: 8080
+          env:
+            - name: REDIS_HOST
+              value: "redis.default.svc.cluster.local"
+          resources:
+            limits:
+              cpu: "250m"
+              memory: "256Mi"
+            requests:
+              cpu: "100m"
+              memory: "128Mi"
+

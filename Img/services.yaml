@@ -1,0 +1,119 @@
+apiVersion: serving.knative.dev/v1
+kind: Service
+metadata:
+  name: img-f1-input
+  namespace: default
+spec:
+  template:
+    metadata:
+      annotations:
+        autoscaling.knative.dev/minScale: "1"
+    spec:
+      containerConcurrency: 1
+      containers:
+        - image: 172.0.0.0:5000/img-f1-input:latest
+          imagePullPolicy: IfNotPresent
+          ports:
+            - containerPort: 8080
+          env:
+            - name: F2_URL
+              value: "http://img-f2-resize-blur.default.svc.cluster.local/"
+            - name: REDIS_HOST
+              value: "redis.default.svc.cluster.local"
+          resources:
+            limits:
+              cpu: "500m"
+              memory: "512Mi"
+            requests:
+              cpu: "200m"
+              memory: "256Mi"
+---
+apiVersion: serving.knative.dev/v1
+kind: Service
+metadata:
+  name: img-f2-resize-blur
+  namespace: default
+spec:
+  template:
+    metadata:
+      annotations:
+        autoscaling.knative.dev/minScale: "1"
+    spec:
+      containerConcurrency: 1
+      containers:
+        - image: 172.0.0.0:5000/img-f2-resize-blur:latest
+          imagePullPolicy: IfNotPresent
+          ports:
+            - containerPort: 8080
+          env:
+            - name: F3_URL
+              value: "http://img-f3-edge-detect.default.svc.cluster.local/"
+            - name: REDIS_HOST
+              value: "redis.default.svc.cluster.local"
+          resources:
+            limits:
+              cpu: "512m"
+              memory: "1024Mi"
+            requests:
+              cpu: "200m"
+              memory: "512Mi"
+
+---
+apiVersion: serving.knative.dev/v1
+kind: Service
+metadata:
+  name: img-f3-edge-detect
+  namespace: default
+spec:
+  template:
+    metadata:
+      annotations:
+        autoscaling.knative.dev/minScale: "1"
+    spec:
+      containerConcurrency: 1
+      containers:
+        - image: 172.0.0.0:5000/img-f3-edge-detect:latest
+          imagePullPolicy: IfNotPresent
+          ports:
+            - containerPort: 8080
+          env:
+            - name: F4_URL
+              value: "http://img-f4-aggregate-output.default.svc.cluster.local/"
+            - name: REDIS_HOST
+              value: "redis.default.svc.cluster.local"
+          resources:
+            limits:
+              cpu: "512m"
+              memory: "1024Mi"
+            requests:
+              cpu: "200m"
+              memory: "512Mi"
+
+---
+apiVersion: serving.knative.dev/v1
+kind: Service
+metadata:
+  name: img-f4-aggregate-output
+  namespace: default
+spec:
+  template:
+    metadata:
+      annotations:
+        autoscaling.knative.dev/minScale: "1"
+    spec:
+      containerConcurrency: 1
+      containers:
+        - image: 172.0.0.0:5000/img-f4-aggregate-output:latest
+          imagePullPolicy: IfNotPresent
+          ports:
+            - containerPort: 8080
+          env:
+            - name: REDIS_HOST
+              value: "redis.default.svc.cluster.local"
+          resources:
+            limits:
+              cpu: "512m"
+              memory: "512Mi"
+            requests:
+              cpu: "200m"
+              memory: "256Mi"

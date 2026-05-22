@@ -1,0 +1,148 @@
+apiVersion: serving.knative.dev/v1
+kind: Service
+metadata:
+  name: etl-f1-acquire
+  namespace: default
+spec:
+  template:
+    metadata:
+      annotations:
+        autoscaling.knative.dev/minScale: "1"
+    spec:
+      containerConcurrency: 1
+      containers:
+        - image: 172.0.0.0:5000/etl-f1-acquire:latest
+          imagePullPolicy: IfNotPresent
+          ports:
+            - containerPort: 8080
+          env:
+            - name: F2_URL
+              value: "http://etl-f2-clean.default.svc.cluster.local/"
+            - name: REDIS_HOST
+              value: "redis.default.svc.cluster.local"
+          resources:
+            limits:
+              cpu: "500m"
+              memory: "256Mi"
+            requests:
+              cpu: "200m"
+              memory: "128Mi"
+---
+apiVersion: serving.knative.dev/v1
+kind: Service
+metadata:
+  name: etl-f2-clean
+  namespace: default
+spec:
+  template:
+    metadata:
+      annotations:
+        autoscaling.knative.dev/minScale: "1"
+    spec:
+      containerConcurrency: 1
+      containers:
+        - image: 172.0.0.0:5000/etl-f2-clean:latest
+          imagePullPolicy: IfNotPresent
+          ports:
+            - containerPort: 8080
+          env:
+            - name: F3_URL
+              value: "http://etl-f3-transform.default.svc.cluster.local/"
+            - name: REDIS_HOST
+              value: "redis.default.svc.cluster.local"
+          resources:
+            limits:
+              cpu: "500m"
+              memory: "256Mi"
+            requests:
+              cpu: "200m"
+              memory: "128Mi"
+---
+apiVersion: serving.knative.dev/v1
+kind: Service
+metadata:
+  name: etl-f3-transform
+  namespace: default
+spec:
+  template:
+    metadata:
+      annotations:
+        autoscaling.knative.dev/minScale: "1"
+        autoscaling.knative.dev/maxScale: "20"
+    spec:
+      containerConcurrency: 1
+      containers:
+        - image: 172.0.0.0:5000/etl-f3-transform:latest
+          imagePullPolicy: IfNotPresent
+          ports:
+            - containerPort: 8080
+          env:
+            - name: F4_URL
+              value: "http://etl-f4-aggregate.default.svc.cluster.local/"
+            - name: REDIS_HOST
+              value: "redis.default.svc.cluster.local"
+          resources:
+            limits:
+              cpu: "500m"
+              memory: "256Mi"
+            requests:
+              cpu: "200m"
+              memory: "128Mi"
+---
+apiVersion: serving.knative.dev/v1
+kind: Service
+metadata:
+  name: etl-f4-aggregate
+  namespace: default
+spec:
+  template:
+    metadata:
+      annotations:
+        autoscaling.knative.dev/minScale: "1"
+    spec:
+      containerConcurrency: 1
+      containers:
+        - image: 172.0.0.0:5000/etl-f4-aggregate:latest
+          imagePullPolicy: IfNotPresent
+          ports:
+            - containerPort: 8080
+          env:
+            - name: F5_URL
+              value: "http://etl-f5-output.default.svc.cluster.local/"
+            - name: REDIS_HOST
+              value: "redis.default.svc.cluster.local"
+          resources:
+            limits:
+              cpu: "500m"
+              memory: "256Mi"
+            requests:
+              cpu: "200m"
+              memory: "128Mi"
+---
+apiVersion: serving.knative.dev/v1
+kind: Service
+metadata:
+  name: etl-f5-output
+  namespace: default
+spec:
+  template:
+    metadata:
+      annotations:
+        autoscaling.knative.dev/minScale: "1"
+    spec:
+      containerConcurrency: 1
+      containers:
+        - image: 172.0.0.0:5000/etl-f5-output:latest
+          imagePullPolicy: IfNotPresent
+          ports:
+            - containerPort: 8080
+          env:
+            - name: REDIS_HOST
+              value: "redis.default.svc.cluster.local"
+          resources:
+            limits:
+              cpu: "500m"
+              memory: "256Mi"
+            requests:
+              cpu: "200m"
+              memory: "128Mi"

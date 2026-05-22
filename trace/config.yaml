@@ -1,0 +1,87 @@
+global:
+  gateway_url: "http://172.0.0.0:31519"
+  total_requests: 500
+  arrival_rate: 1
+  timeout: 40
+  max_in_flight: 50
+  warmup_requests: 10
+
+cold_start:
+  enabled: true
+  idle_threshold: 30
+
+burst:
+  enabled: true
+  multiplier: 3
+  interval: 60
+  duration: 10
+
+workflows:
+
+  - name: tg_workflow 
+    host: tg-f1-gen.default.172.0.0.0.nip.io
+    content_type: application/json
+    payload_dir: ./data/tg_workflow/tg_requests/
+    payload_mode: json_file
+
+  - name: qr_workflow
+    host: qr-f1-gen.default.172.0.0.0.nip.io
+    content_type: application/json
+    payload_dir: ./data/qr_workflow/qr_requests/
+    payload_mode: json_file
+
+
+  - name: sec_workflow
+    host: sec-f1-upload.default.172.0.0.0.nip.io
+    content_type: application/json
+    payload_dir: ./data/sec_workflow/sec_requests/
+    payload_mode: json_file
+  
+  - name: img_workflow
+    host: img-f1-input.default.172.0.0.0.nip.io
+    content_type: application/json
+    payload_dir: ./data/img_workflow/img_requests/
+    payload_mode: json_file
+
+  - name: etl_workflow
+    host: etl-f1-acquire.default.172.0.0.0.nip.io 
+    content_type: application/json
+    payload_dir: ./data/etl_workflow/etl_requests/
+    payload_mode: json_file
+
+  - name: ocr_workflow
+    host: ocr-f1-split.default.172.0.0.0.nip.io
+    content_type: application/json
+    payload_dir: ./data/ocr_workflow/ocr_requests/
+    payload_mode: json_file
+
+  -  name: fd_workflow
+     host: fd-f1-preprocess.default.172.0.0.0.nip.io
+     content_type: application/json
+     payload_dir: ./data/fd_workflow/fd_requests/
+     payload_mode: json_file
+
+  - name: ecom_workflow
+    host: ecom-f1-receive.default.172.0.0.0.nip.io
+    content_type: application/json
+    payload_dir: ./data/ecom_workflow/ecom_requests/
+    payload_mode: json_file
+
+  - name: iot_workflow
+    host: iot-f1-ingest.default.172.0.0.0.nip.io
+    content_type: application/json
+    payload_dir: ./data/iot_workflow/iot_requests/
+    payload_mode: json_file
+
+  - name: mc_workflow
+    host: mc-f1-request.default.172.0.0.0.nip.io
+    content_type: application/json
+    payload_dir: ./data/mc_workflow/mc_requests/
+    payload_mode: json_file
+
+  - name: log_workflow
+    host: log-f1-batch.default.172.0.0.0.nip.io
+    content_type: application/json
+    payload_dir: ./data/log_workflow/log_requests/
+    payload_mode: json_file
+

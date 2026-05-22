@@ -1,0 +1,6 @@
+fastapi
+uvicorn
+redis
+psutil
+requests
+regex

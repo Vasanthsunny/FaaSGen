@@ -1,0 +1,6 @@
+fastapi
+uvicorn
+requests
+psutil
+redis
+numpy<2
