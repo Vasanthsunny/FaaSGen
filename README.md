@@ -1,2 +1,1 @@
-# Empherical-Serverless-Testbed-Trace-Generation
-Testbed 
+# Empherical Serverless Testbed & Trace Generation
