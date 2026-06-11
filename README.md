@@ -11,8 +11,9 @@ Each workflow represents a Directed Acyclic Graph (DAG) of interconnected server
 - Each function directory inside a workflow represents a serverless function/node in the DAG.
 - Function execution follows dependency order such as:
 
+```text
 f1 → f2 → f3 → ...
-
+```
 Functions communicate using HTTP-based JSON payloads. Depending on the workflow, data transfer occurs either through:
 
 - Direct JSON payload exchange
@@ -24,6 +25,7 @@ The repository is intended for benchmarking, experimentation, orchestration rese
 
 ## Repository Structure
 
+```text
 .
 ├── kapply_all.sh
 ├── LICENSE
@@ -40,21 +42,21 @@ The repository is intended for benchmarking, experimentation, orchestration rese
 ├── OCR/
 ├── QR/
 └── Sec/
-
+```
 Deatiled workflow descriptions are  available in `Workflow.md `
 ---
 
 ## Workflow Directory Structure
 
 Each workflow directory contains:
-
+```text
 workflow/
 ├── build.sh
 ├── services.yaml
 ├── function-1/
 ├── function-2/
 └── ...
-
+```
 build.sh
 
 Used to build all function container images for the workflow.
@@ -103,22 +105,22 @@ Payload Types
 1. Direct JSON Payload
 
 Example:
-
+```text
 {
   "image": "...",
   "metadata": "...",
   "request_id": "123"
 }
-
+```
 2. MinIO Object Reference Payload
 
 Example:
-
+```text
 {
   "bucket": "workflow-data",
   "object": "input/file1.json"
 }
-
+```
 ---
 
 # Platform Requirements
