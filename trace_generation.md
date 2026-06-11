@@ -35,7 +35,7 @@ This file defines:
 - Input data directories
 
 ## Example configuration:
-
+```text
 global:
   gateway_url: "http://<HOST_IP>:31519"
   total_requests: 500
@@ -57,7 +57,7 @@ workflows:
     content_type: application/json
     payload_dir: ./data/tg_workflow/tg_requests/
     payload_mode: json_file
-
+```
 ---
 
 ## Data Directory
