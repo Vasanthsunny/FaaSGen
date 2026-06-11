@@ -7,12 +7,12 @@
 
 ## Ecom — E-Commerce Workflow
 
-*ecom-f1-receive
-*ecom-f2-validate
-*ecom-f3-inventory
-*ecom-f4-payment
-*ecom-f5-combine
-*ecom-f6-notify
+- ecom-f1-receive
+- ecom-f2-validate
+- ecom-f3-inventory
+- ecom-f4-payment
+- ecom-f5-combine
+* ecom-f6-notify
 
 Simulates an e-commerce order processing pipeline.
 
