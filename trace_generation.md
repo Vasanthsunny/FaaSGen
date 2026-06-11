@@ -7,7 +7,7 @@ The repository includes a dedicated trace/ directory for automated workload gene
 ---
 
 ## Trace Directory Structure
-
+```text
 trace/
 ├── config.yaml
 ├── generate_trace.py
@@ -15,7 +15,7 @@ trace/
 ├── dump.sh
 ├── sample_trace.csv
 └── data/
-
+```
 ---
 
 ## Trace Components
@@ -66,6 +66,7 @@ The data/ directory contains all workflow-specific request payloads.
 
 Example:
 
+```text
 data/
 ├── tg_workflow/
 ├── qr_workflow/
@@ -78,7 +79,7 @@ data/
 ├── iot_workflow/
 ├── mc_workflow/
 └── log_workflow/
-
+```
 Each workflow directory contains JSON request payload files used during execution. for MLT workflow, compresssed (ZIP) file should be supplied (images in disticnt directories for each type).
 
 Example:
