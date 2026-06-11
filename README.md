@@ -43,7 +43,7 @@ The repository is intended for benchmarking, experimentation, orchestration rese
 ├── QR/
 └── Sec/
 ```
-Deatiled workflow descriptions are  available in `Workflow.md `
+Deatiled workflow descriptions are  available in [Workflow Descriptions](workflows.md)
 ---
 
 ## Workflow Directory Structure
@@ -215,7 +215,7 @@ Minimum Setup
 
 ## Monitoring 
 
-All application functions automatically logs the metrics in redis (See `trace_generation.md`) for each request.
+All application functions automatically logs the metrics in redis (See [Trace Generation](trace_generation.md) for each request.
 
 ---
 
